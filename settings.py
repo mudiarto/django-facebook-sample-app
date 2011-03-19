@@ -11,8 +11,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'dev.db',                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -75,6 +75,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
+
 ROOT_URLCONF = 'django_facebook_sample_app.urls'
 
 TEMPLATE_DIRS = (
@@ -90,7 +91,58 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
+    'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
+    'django.contrib.admindocs',
+    'social_auth', # added social-auth backend
 )
+
+############################################################
+# social-auth settings
+# according to instruction in :https://github.com/omab/django-social-auth
+############################################################
+
+# added social_auth backend to AUTHENTICATION_BACKEND
+AUTHENTICATION_BACKENDS = (
+    #'social_auth.backends.twitter.TwitterBackend',
+    'social_auth.backends.facebook.FacebookBackend',
+    #'social_auth.backends.google.GoogleOAuthBackend',
+    #'social_auth.backends.google.GoogleOAuth2Backend',
+    #'social_auth.backends.google.GoogleBackend',
+    #'social_auth.backends.yahoo.YahooBackend',
+    #'social_auth.backends.contrib.linkedin.LinkedinBackend',
+    #'social_auth.backends.contrib.LiveJournalBackend',
+    #'social_auth.backends.contrib.orkut.OrkutBackend',
+    #'social_auth.backends.OpenIDBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+
+# The application will try to import custom backends from the sources defined in:
+#  This way it's easier to add new providers, check the already defined ones in social_auth.backends for examples.
+# Take into account that backends must be defined in AUTHENTICATION_BACKENDS or Django won't pick them when trying to authenticate the user.
+SOCIAL_AUTH_IMPORT_BACKENDS = (
+    'myproy.social_auth_extra_services',
+)
+
+# Setup login URLs:
+LOGIN_URL          = '/login-form/'
+LOGIN_REDIRECT_URL = '/logged-in/'
+LOGIN_ERROR_URL    = '/login-error/'
+
+# In case of authentication error, the message can be stored in session if the following setting is defined:
+SOCIAL_AUTH_ERROR_KEY = 'social_errors'
+
+# Configure authentication and association complete URL names to avoid possible clashes:
+SOCIAL_AUTH_COMPLETE_URL_NAME  = 'complete'
+SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'associate_complete'
+
+############################################################
+# end social-auth settings
+############################################################
+
+# import local settings
+try:
+    from local_settings import *
+except:
+    pass
