@@ -1,0 +1,13 @@
+*~
+*.pyc
+*.db
+.DS_Store
+.tmp*
+*.old
+*.sw?
+*.orig
+tags
+local_settings.py
+.sass-cache/
+site_media/
+unused/
