@@ -16,9 +16,19 @@
     </p>
   </div>
 
+  {% comment %} 
+  {# use social-auth backend authentication instead of javascript sdk #}
   <div id="login-flow">
     <fb:login-button perms="email,offline_access" show-faces="true"></fb:login-button>
   </div>
+  {% endcomment %} 
+
+  {% if not logged_in_user %}
+  <div id="login-flow">
+      <a href="{% url begin 'facebook' %}">login with facebook </a>
+  </div>
+  {% endif %}
+
 </div>
-<img class="promo" alt="Welcome to Run with Friends" src="/splash.jpg">
+<img class="promo" alt="Welcome to Run with Friends" src="{{STATIC_URL}}splash.jpg">
 {% endblock %}

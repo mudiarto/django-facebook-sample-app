@@ -6,10 +6,23 @@
       {% block title %}Welcome{% endblock %} &mdash; Run with Friends
     </title>
     <meta name="description" content="Track and share your runs with friends.">
-    <link type="text/css" rel="stylesheet" href="/awesome-buttons.css">
-    <link type="text/css" rel="stylesheet" href="/main.css">
+    <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}awesome-buttons.css">
+    <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}main.css">
   </head>
   <body>
+
+    <script src="{{STATIC_URL}}main.js"></script>
+    <div id="fb-root"></div>
+    <script>
+      {# async loading of facebook js sdk - according to doc, it is best to put it right after body tag#}
+      window.fbAsyncInit = function() { facebookInit({{ js_conf|safe }}) };
+      (function() {
+        var e = document.createElement('script');
+        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+        document.getElementById('fb-root').appendChild(e);
+      }());
+     </script>
+
     <div id="doc">
       <div class="hd">
         {% if logged_in_user %}
@@ -18,7 +31,8 @@
               <a class="name" href="/user/{{ logged_in_user.user_id }}">
                 {{ logged_in_user.name }}
               </a>
-              <a class="logout" onclick="FB.logout()">Logout</a>
+              {# <a class="logout" onclick="FB.logout()">Logout</a> #}
+              <a class="logout" href="{% url logout %}">Logout</a>
             </div>
             <img width="50" height="50" src="{{ logged_in_user.picture }}">
           </div>
@@ -35,9 +49,9 @@
       </div><!-- .bd -->
 
       <div class="ft">
-        This is an awesome running
+        This is an awesome running app.
         <span onclick="FB.api({ method: 'auth.revokeAuthorization' })">
-          app
+          Click here to Revoke FB Authorization (dev only !!)
         </span>.
         <a class="rfloat" target="_new"
            href="http://github.com/facebook/runwithfriends">
@@ -46,28 +60,5 @@
       </div>
     </div>
 
-    <script src="/main.js"></script>
-    <div id="fb-root"></div>
-    <script>
-      {# async loading of facebook js sdk #}
-      window.fbAsyncInit = function() { facebookInit({{ js_conf|safe }}) };
-      (function() {
-        var e = document.createElement('script');
-        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
-        document.getElementById('fb-root').appendChild(e);
-      }());
-
-      {# async loading of google analytics #}
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-19854556-1']);
-      _gaq.push(['_trackPageview']);
-
-      (function() {
-        var ga = document.createElement('script');
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(ga, s);
-      })();
-    </script>
   </body>
 </html>

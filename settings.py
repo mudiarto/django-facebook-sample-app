@@ -1,7 +1,13 @@
 # Django settings for django_facebook_sample_app project.
+import os
+#import sys
+from path import path
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+
+PROJECT_ROOT = path(__file__).abspath().dirname()
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -84,17 +90,30 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+  'django.contrib.auth.context_processors.auth',
+  'staticfiles.context_processors.static_url', # django-staticfiles requirement
+  'runwithfriends.context_processors.facebook', # helper for facebook
+)
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
+
+    # staticfiles - remove it in 1.3
+    'staticfiles',
+
+    # third party
     'social_auth', # added social-auth backend
+
+    # our app
+    'runwithfriends', 
 )
 
 ############################################################
@@ -127,11 +146,14 @@ SOCIAL_AUTH_IMPORT_BACKENDS = (
 
 # Setup login URLs:
 LOGIN_URL          = '/login-form/'
-LOGIN_REDIRECT_URL = '/logged-in/'
+LOGIN_REDIRECT_URL = '/'
 LOGIN_ERROR_URL    = '/login-error/'
 
 # In case of authentication error, the message can be stored in session if the following setting is defined:
 SOCIAL_AUTH_ERROR_KEY = 'social_errors'
+
+# Not mandatory, but recommended:
+SOCIAL_AUTH_DEFAULT_USERNAME = 'new_social_auth_user'
 
 # Configure authentication and association complete URL names to avoid possible clashes:
 SOCIAL_AUTH_COMPLETE_URL_NAME  = 'complete'
@@ -141,7 +163,26 @@ SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'associate_complete'
 # end social-auth settings
 ############################################################
 
-# import local settings
+
+############################################################
+# staticfiles settings
+############################################################
+SERVE_MEDIA = DEBUG  # only serve media when debug is on
+STATIC_ROOT = os.path.join(PROJECT_ROOT, "static/")
+STATIC_URL = "/static/"
+
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, "media/"),
+)
+############################################################
+# end staticfiles settings
+############################################################
+
+############################################################
+# import local settings. 
+# You need to copy local_settings.py.template to 
+# local_settings.py, and fill the information there
+############################################################
 try:
     from local_settings import *
 except:
