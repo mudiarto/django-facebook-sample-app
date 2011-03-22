@@ -25,7 +25,7 @@
 
     <div id="doc">
       <div class="hd">
-        {% if logged_in_user %}
+        {% if logged_in_user and not in_facebook %}
           <div id="user-info">
             <div class="info">
               <a class="name" href="/user/{{ logged_in_user.user_id }}">

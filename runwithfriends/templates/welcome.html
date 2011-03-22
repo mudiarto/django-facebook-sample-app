@@ -27,6 +27,10 @@
   <div id="login-flow">
       <a href="{% url begin 'facebook' %}">login with facebook </a>
   </div>
+  {% else %}
+  <div id="login-flow">
+    <fb:login-button perms="email,offline_access" show-faces="true"></fb:login-button>
+  </div>
   {% endif %}
 
 </div>

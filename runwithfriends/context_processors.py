@@ -11,11 +11,12 @@ def facebook(context):
             u'appId': settings.FACEBOOK_APP_ID,
             u'canvasName': settings.FACEBOOK_CANVAS_NAME,
             u'userIdOnServer': user_id,
-            u'channelUrl':reverse('channel_html')
+            u'channelUrl':reverse('channel_html'),
         })
 
 
     return {
             'js_conf': js_conf,
             'logged_in_user': user,
+            'in_facebook':True if context.facebook else False,
     }

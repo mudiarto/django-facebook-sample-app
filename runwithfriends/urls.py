@@ -6,6 +6,7 @@ from runwithfriends.views import recent_runs, user_runs, run, realtime, refresh_
 urlpatterns = patterns('',
     # Example:
     url(r"^$", recent_runs, name="recent_runs"),
+
     url(r"^user/(.*)/$", user_runs, name="user_runs"),
     url(r"^run/$", run, name="run"),
     url(r"^realtime/$", realtime, name="realtime"),

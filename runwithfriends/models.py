@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 class Run(models.Model):
 
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, related_name="runs")
     location = models.CharField(max_length=100,)
     distance = models.FloatField(max_length=100,)
     date = models.DateField()
