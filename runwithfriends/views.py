@@ -13,7 +13,26 @@ from django.contrib.auth import logout as auth_logout
 
 @csrf_exempt
 def recent_runs ( request ):
-    """Show recent runs for the user and friends"""
+    """
+    Show recent runs for the user and friends
+
+    See the detail implementation. There are several combinations we have to handle:
+        - user not logged in in regular website, doesn't give permission in facebook
+            => that's fine, we still display the welcome screen
+        - user not logged in in regular website, give permission in facebook
+            => need to click on "login with facebook" button to create & associate account
+        - user logged in with facebook in regular website, and access with the same facebook account
+          in facebook app 
+            => no problem , user can use it seamlessly
+        - user logged in with email (or other) in regular website
+            - accessing facebook with account that is not associated yet 
+                => should offer to associate account
+            - accessing facebook with account that is associated with different user id
+                => should offer to logout and switch account
+
+
+    
+    """
 
     user = request.user
 

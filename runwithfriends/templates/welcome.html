@@ -24,8 +24,8 @@
   {% endcomment %} 
 
   {% if not logged_in_user %}
-  <div id="login-flow">
-      <a href="{% url begin 'facebook' %}">login with facebook </a>
+  <div id="login-social">
+      <a target="_top" href="{% url begin 'facebook' %}">login with facebook </a>
   </div>
   {% else %}
   <div id="login-flow">

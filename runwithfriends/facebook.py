@@ -92,6 +92,8 @@ class FacebookMiddleware(object):
     """
         check if it is a facebook canvas / page request
         It is facebook request if it is POST request, and contain valid signed-requests
+
+
     """
     def process_request(self, request):
         request.facebook = None
