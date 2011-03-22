@@ -61,7 +61,8 @@ MEDIA_URL = ''
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+
+# ADMIN_MEDIA_PREFIX = '' # SEE DEFINITION IN STATICFILES SETTINGS
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'i=6&ymfrh1ib38^9exo=4qcs&$pj$wav10@^5*nj@sf0-6otov'
@@ -173,6 +174,7 @@ SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'associate_complete'
 SERVE_MEDIA = DEBUG  # only serve media when debug is on
 STATIC_ROOT = os.path.join(PROJECT_ROOT, "static/")
 STATIC_URL = "/static/"
+ADMIN_MEDIA_PREFIX = STATIC_URL + "admin/"
 
 STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, "media/"),
