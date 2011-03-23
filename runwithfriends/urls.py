@@ -12,7 +12,7 @@ urlpatterns = patterns('',
     url(r"^realtime/$", realtime, name="realtime"),
     url(r"^refresh-user/(.*)/$", refresh_user, name="refresh_user"),
 
-    # our own logout, since social-auth doesn't have logout
+    # our own logout, since socialregistration doesn't have logout
     url(r"^logout/$", logout, name="logout"),
 
     # to be used with FB.init channel.html

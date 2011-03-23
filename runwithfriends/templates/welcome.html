@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load facebook_tags %}
 
 {% block title %}Welcome{% endblock %}
 {% block body %}
@@ -16,12 +17,22 @@
     </p>
   </div>
 
+  <div id="login-flow">
+      <hr/>
+      <a href="{% url registration_register %}">Register with your email</a><br/>
+      or<br/>
+      <a href="{% url auth_login %}">Login with your email</a><br/>
+      <hr/>
+      or
+    {% facebook_button %}
+  </div>
+
+
   {% comment %} 
   {# use social-auth backend authentication instead of javascript sdk #}
   <div id="login-flow">
     <fb:login-button perms="email,offline_access" show-faces="true"></fb:login-button>
   </div>
-  {% endcomment %} 
 
   {% if not logged_in_user %}
   <div id="login-social">
@@ -33,6 +44,7 @@
   </div>
   {% endif %}
 
+  {% endcomment %} 
 </div>
 <img class="promo" alt="Welcome to Run with Friends" src="{{STATIC_URL}}splash.jpg">
 {% endblock %}

@@ -2,7 +2,7 @@ from django.conf import settings
 from django.shortcuts import _get_queryset
 from django.utils import simplejson as json
 
-from social_auth.models import UserSocialAuth
+from socialregistration.models import FacebookProfile
 
 import base64
 import hmac
@@ -11,10 +11,10 @@ import time
 
 
 
-class Facebook(object):
+class FacebookApp(object):
     """Wraps the Facebook specific logic"""
     def __init__(self, app_id=settings.FACEBOOK_APP_ID,
-            app_secret=settings.FACEBOOK_API_SECRET):
+            app_secret=settings.FACEBOOK_SECRET_KEY):
         self.app_id = app_id
         self.app_secret = app_secret
         self.user_id = None
@@ -88,23 +88,22 @@ def get_object_or_None(klass, *args, **kwargs):
     except queryset.model.DoesNotExist:
         return None
 
-class FacebookMiddleware(object):
+class FacebookAppMiddleware(object):
     """
         check if it is a facebook canvas / page request
         It is facebook request if it is POST request, and contain valid signed-requests
 
-
     """
     def process_request(self, request):
-        request.facebook = None
+        request.facebook_app = None
 
         if request.method == "POST":
             # if it contain signed request, then it may be from facebook
-            facebook = Facebook()
-            if facebook.load_signed_request(request.POST.get('signed_request')):
+            facebook_app = FacebookApp()
+            if facebook_app.load_signed_request(request.POST.get('signed_request')):
                 # switch the request to GET, since this is actually a GET request
                 request.method = "GET"
-                request.facebook = facebook
+                request.facebook_app = facebook_app
 
                 # check if the facebook user already associated with a django account
                 # also set associated flag if the current (django) logged in user
@@ -114,12 +113,17 @@ class FacebookMiddleware(object):
                 # e.g. user can be logged in to website with his email & password
                 # but then go to facebook, and try to access our app with different facebook profile.
                 # the middleware only detects this condition, it is up to the app to handle this case gracefully
-                if facebook.is_authorized:
-                    facebook.social_auth = get_object_or_None(UserSocialAuth,
-                            provider='facebook', uid=facebook.user_id)
-                    # check if both are the same user
-                    if facebook.social_auth:
-                        facebook.associated = (request.user == facebook.social_auth.user)
+                #if facebook_app.is_authorized:
+                #    facebook.social_auth = get_object_or_None(UserSocialAuth,
+                #            provider='facebook', uid=facebook.user_id)
+                #    # check if both are the same user
+                #    if facebook.social_auth:
+                #        facebook.associated = (request.user == facebook.social_auth.user)
+                if facebook_app.is_authorized:
+                    facebook_app.profile = get_object_or_None(FacebookProfile, uid=facebook_app.user_id)
+                    if facebook_app.profile:
+                        facebook_app.associated = (request.user == facebook_app.profile.user)
+
 
         return None
 

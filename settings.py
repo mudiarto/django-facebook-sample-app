@@ -81,10 +81,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 
-    # facebook middleware
-    'runwithfriends.facebook.FacebookMiddleware',
+    'socialregistration.middleware.FacebookMiddleware',
+    'runwithfriends.facebook.FacebookAppMiddleware',
 )
-
 
 ROOT_URLCONF = 'django_facebook_sample_app.urls'
 
@@ -92,11 +91,14 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.join(PROJECT_ROOT, "templates"),
 )
 
 
 TEMPLATE_CONTEXT_PROCESSORS = (
   'django.contrib.auth.context_processors.auth',
+  'django.core.context_processors.request',
+  'django.contrib.messages.context_processors.messages',
   'staticfiles.context_processors.static_url', # django-staticfiles requirement
   'runwithfriends.context_processors.facebook', # helper for facebook
 )
@@ -114,38 +116,22 @@ INSTALLED_APPS = (
     'staticfiles',
 
     # third party
-    'social_auth', # added social-auth backend
+    'socialregistration',
+    'registration',
 
     # our app
     'runwithfriends', 
 )
 
 ############################################################
-# social-auth settings
-# according to instruction in :https://github.com/omab/django-social-auth
+# socialregistration settings
+# according to instruction in : https://github.com/flashingpumpkin/django-socialregistration
 ############################################################
 
 # added social_auth backend to AUTHENTICATION_BACKEND
 AUTHENTICATION_BACKENDS = (
-    #'social_auth.backends.twitter.TwitterBackend',
-    'social_auth.backends.facebook.FacebookBackend',
-    #'social_auth.backends.google.GoogleOAuthBackend',
-    #'social_auth.backends.google.GoogleOAuth2Backend',
-    #'social_auth.backends.google.GoogleBackend',
-    #'social_auth.backends.yahoo.YahooBackend',
-    #'social_auth.backends.contrib.linkedin.LinkedinBackend',
-    #'social_auth.backends.contrib.LiveJournalBackend',
-    #'social_auth.backends.contrib.orkut.OrkutBackend',
-    #'social_auth.backends.OpenIDBackend',
+    'socialregistration.auth.FacebookAuth',
     'django.contrib.auth.backends.ModelBackend',
-)
-
-
-# The application will try to import custom backends from the sources defined in:
-#  This way it's easier to add new providers, check the already defined ones in social_auth.backends for examples.
-# Take into account that backends must be defined in AUTHENTICATION_BACKENDS or Django won't pick them when trying to authenticate the user.
-SOCIAL_AUTH_IMPORT_BACKENDS = (
-    'myproy.social_auth_extra_services',
 )
 
 # Setup login URLs:

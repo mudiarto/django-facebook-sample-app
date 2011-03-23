@@ -8,7 +8,7 @@ I want to have & experiment with some additional features that are not available
 
   - accessible inside and outside facebook apps
   - work as personal app, and also app in a pages
-  - using 3rd party login - django-social-auth 
+  - using 3rd party login - django-socialregistration
 
 Instruction:
 

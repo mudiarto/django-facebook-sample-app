@@ -30,10 +30,8 @@
   <div class="main">
     <h1>Where did you run recently?</h1>
 
-    <form action="/run" method="post">
-      <div style="display: none">
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
-      </div>
+    <form action="{% url run %}" method="post">
+      {% csrf_token %}
 
       <div>
         <label for="location">Where did you go?</label>

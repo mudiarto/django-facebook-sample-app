@@ -16,7 +16,8 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
 
     # authorization
-    url(r'^account/', include('social_auth.urls')),
+    url(r'^social/', include('socialregistration.urls')),
+    url(r'^account/', include('registration.backends.simple.urls')),
 
     # our main software
     (r'', include('runwithfriends.urls')),

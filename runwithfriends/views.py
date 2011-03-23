@@ -4,17 +4,34 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
 
+from django.contrib import messages
+
 from django.http import HttpResponseRedirect
-import social_auth
+import datetime
+import base64
+import cgi
+from django.utils import simplejson as json
 
 # support logout
 from django.contrib.auth import logout as auth_logout
+
+from runwithfriends.models import *
+
+from django.contrib.auth.decorators import login_required #, permission_required
+
+def htmlescape(text):
+    """Escape text for use as HTML"""
+    return cgi.escape(
+        text, True).replace("'", '&#39;').encode('ascii', 'xmlcharrefreplace')
+
+
 
 
 @csrf_exempt
 def recent_runs ( request ):
     """
-    Show recent runs for the user and friends
+    if not logged in, will show the welcome screen
+    if logged in, will show recent runs for the user and friends
 
     See the detail implementation. There are several combinations we have to handle:
         - user not logged in in regular website, doesn't give permission in facebook
@@ -36,54 +53,88 @@ def recent_runs ( request ):
 
     user = request.user
 
-    # this value is set in facebook middleware
-    facebook = request.facebook
-
-    if facebook:
-        # called from inside facebook
-        if facebook.is_authorized and facebook.is_associated:
-            # user already authorized & logged in
-            # PROBLEM: it is possible that facebook authorize it, but we don't have
-            # valid user (because user is not logged in to our application)
-            # need to think also if user go to our site directly using login name "A"
-            # but then also visit our site via facebook with different login name "B"
-            # in that case, then i think facebook must have precedence,
-            # but what happen if user go back to the original site using login name "A" ?
-            # in that case, I think actually the best option is to stay with login "B" to allow
-            # seamless integration between facebook & web app - like causes.com
-            user_recent_runs = user.runs.order_by('date')[:5]
-            return render_to_response('runs.html',  {
-                'user_recent_runs': user_recent_runs
-                },
-                context_instance=RequestContext(request))
-        else:
-            # called from facebook, but user doesn't give permission yet
-            # i think the best action here is to ask very basic permission from user
-            # we can't redirect view, so we have to call the function directly
-            return render_to_response('welcome.html',  {
-                },
-                context_instance=RequestContext(request))
+    if user.is_authenticated():
+        user_recent_runs = user.runs.order_by('date')[:5]
+        return render_to_response('runs.html',  {
+            'user_recent_runs': user_recent_runs
+            },
+            context_instance=RequestContext(request))
     else:
-        # called directly
-        if user.is_authenticated():
-            return render_to_response('welcome.html',  {
-                },
-                context_instance=RequestContext(request))
-        else:
-            return render_to_response('welcome.html',  {
-                },
-                context_instance=RequestContext(request))
-
+        return render_to_response('welcome.html',  {
+            },
+            context_instance=RequestContext(request))
 
 def user_runs( request ):
     return render_to_response('welcome.html',  {
         },
         context_instance=RequestContext(request))
 
+class RunException(Exception):
+    pass
+
+def set_message(request, **obj):
+    """Simple message support"""
+    request.session('msg', base64.b64encode(json.dumps(obj)) if obj else None)
+
+def get_message(request):
+    """Get and clear the current message"""
+    message = request.session.get('msg', None)
+    if message:
+        set_message(request)  # clear the current cookie
+        return json.loads(base64.b64decode(message))
+
+
+
+
+@login_required
 def run( request ):
-    return render_to_response('welcome.html',  {
-        },
-        context_instance=RequestContext(request))
+
+    if request.method == "POST":
+        try:
+            location = request.POST[u'location'].strip()
+            if not location:
+                raise RunException(u'Please specify a location.')
+
+            distance = float(request.POST[u'distance'].strip())
+            if distance < 0:
+                raise RunException(u'Invalid distance.')
+
+            date_year = int(request.POST[u'date_year'].strip())
+            date_month = int(request.POST[u'date_month'].strip())
+            date_day = int(request.POST[u'date_day'].strip())
+            if date_year < 0 or date_month < 0 or date_day < 0:
+                raise RunException(u'Invalid date.')
+            date = datetime.date(date_year, date_month, date_day)
+
+            run = Run(
+                user_id=request.user.id,
+                location=location,
+                distance=distance,
+                date=date,
+            )
+            run.save()
+
+            title = run.pretty_distance + u' miles @' + location
+            publish = u'<a onclick=\'publishRun(' + \
+                    json.dumps(htmlescape(title)) + u')\'>Post to facebook.</a>'
+
+            messages.add_message(request, messages.SUCCESS,
+                    "Successfully create project '%s' "%publish)
+ 
+        except RunException, e:
+            messages.add_message(request, messages.ERROR, e)
+             #self.set_message(type=u'error', content=unicode(e))
+        except KeyError:
+            messages.add_message(request, messages.ERROR, 
+                    "Please specify location, distance & date.")
+        except ValueError:
+            messages.add_message(request, messages.ERROR, 
+                    "Please specify location, distance & date.")
+        except Exception, e:
+            messages.add_message(request, messages.ERROR, 
+                    "Unknown error occured. (%s)"%e)
+
+    return HttpResponseRedirect("/")
 
 def realtime( request ):
     return render_to_response('welcome.html',  {
