@@ -125,7 +125,7 @@ def run( request ):
                     json.dumps(htmlescape(title)) + u')\'>Post to facebook.</a>'
 
             messages.add_message(request, messages.SUCCESS,
-                    "Successfully create project '%s' "%publish)
+                    "Added your run. "+publish)
  
         except RunException, e:
             messages.add_message(request, messages.ERROR, e)
