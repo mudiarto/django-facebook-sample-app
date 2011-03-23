@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load facebook_tags %}
+
+{% block title %}Welcome{% endblock %}
+{% block body %}
+<div class="welcome">
+  <h1>Welcome to Run with Friends</h1>
+
+  <div class="info">
+    <p>
+      This is a simple site where you can log your runs and share your
+      progress with your friends.
+    </p>
+    <p>
+      In order to use Run with Friends you must sign in with your
+      Facebook account.
+    </p>
+  </div>
+
+  You are already logged in with email: {{ user.email }}, but you don't have facebook profile associate with this account
+
+  <div id="login-flow">
+    Connect &amp; associate your facebook account with your login
+    {% facebook_button %}
+
+  </div>
+
+
+  {% comment %} 
+  {# use social-auth backend authentication instead of javascript sdk #}
+  <div id="login-flow">
+    <fb:login-button perms="email,offline_access" show-faces="true"></fb:login-button>
+  </div>
+
+  {% if not logged_in_user %}
+  <div id="login-social">
+      <a target="_top" href="{% url begin 'facebook' %}">login with facebook </a>
+  </div>
+  {% else %}
+  <div id="login-flow">
+    <fb:login-button perms="email,offline_access" show-faces="true"></fb:login-button>
+  </div>
+  {% endif %}
+
+  {% endcomment %} 
+</div>
+<img class="promo" alt="Welcome to Run with Friends" src="{{STATIC_URL}}splash.jpg">
+{% endblock %}

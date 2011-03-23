@@ -26,9 +26,25 @@ def htmlescape(text):
         text, True).replace("'", '&#39;').encode('ascii', 'xmlcharrefreplace')
 
 
+def welcome(request):
+    return render_to_response('welcome.html',  {
+        },
+        context_instance=RequestContext(request))
+
+def welcome_fb(request):
+    return render_to_response('welcome_fb.html',  {
+        },
+        context_instance=RequestContext(request))
+
+def associate(request):
+    return render_to_response('associate.html',  {
+        'user':request.user,
+        },
+        context_instance=RequestContext(request))
 
 
-@csrf_exempt
+
+
 def recent_runs ( request ):
     """
     if not logged in, will show the welcome screen
@@ -61,9 +77,8 @@ def recent_runs ( request ):
             },
             context_instance=RequestContext(request))
     else:
-        return render_to_response('welcome.html',  {
-            },
-            context_instance=RequestContext(request))
+        return welcome(request)
+
 
 @login_required
 def user_runs( request, user_id ):

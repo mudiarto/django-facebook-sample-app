@@ -22,6 +22,7 @@ function facebookInit(config) {
 
   FB.init({
     appId: Config.appId,
+    cookie: true,
     xfbml: true,
     channelUrl:
       window.location.protocol + '//' + window.location.host + Config.channelUrl 
@@ -35,8 +36,17 @@ function facebookInit(config) {
   // if (window == top) { goHome(); }
 }
 
+ function facebookConnect(form){
+      function handleResponse(response){
+          form.submit();
+      }
+      FB.login(handleResponse/*,{perms:'publish_stream,sms,offline_access,email,read_stream,status_update,etc'}*/);
+  }
+
 function handleSessionChange(response) {
   // NOTE: kusno - this function is called when session changed
+  // Not sure why we need this function in the original run with friends
+  // maybe by going home, it will relogin with the new uid ?
   if ((Config.userIdOnServer && !response.session) ||
       Config.userIdOnServer != response.session.uid) {
     // this happen if the session change, and user id is different from the one 
