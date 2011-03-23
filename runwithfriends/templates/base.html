@@ -42,10 +42,13 @@
         <a class="logo" href="/">Run with Friends</a>
       </div>
 
-			{% block messages_block %}
-			{% if messages %}
+      a quick brown fox
 
-			<div id="messages-wrap" style="display:none;">
+			{#% block messages_block %#}
+      a quick brown fox
+			{% if messages %}
+      alsdkj fdkjsla;jklds;
+			<div id="messages-wrap">
 				<ul id="messages">
 					{% for message in messages %}
 					<li id="message_{{ forloop.counter }}"{% if message.tags %} class="{{ message.tags }}"{% endif %}>
@@ -55,12 +58,8 @@
 				</ul>
 			</div>
 			{% endif %}
-			{% endblock %}
+			{#% endblock %#}
 
-
-      {% if message %}
-        <div class="message {{ message.type }}">{{ message.content|safe }}</div>
-      {% endif %}
 
       <div class="bd">
         {% block body %}

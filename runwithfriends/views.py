@@ -4,9 +4,10 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
 
+from django.http import HttpResponseRedirect, Http404
+
 from django.contrib import messages
 
-from django.http import HttpResponseRedirect
 import datetime
 import base64
 import cgi
@@ -64,27 +65,32 @@ def recent_runs ( request ):
             },
             context_instance=RequestContext(request))
 
-def user_runs( request ):
-    return render_to_response('welcome.html',  {
-        },
-        context_instance=RequestContext(request))
+@login_required
+def user_runs( request, user_id ):
+    """Show a specific user's runs, ensure friendship with the logged in user"""
+    # if self.user.friends.count(user_id) or self.user.user_id == user_id:
+    if str(request.user.id) == user_id:
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            messages.add_message(request, messages.ERROR, 
+                    "That user does not use Run with Friends.")
+            return HttpResponseRedirect("/")
+        runs = Run.objects.filter(user=user)
+
+        return render_to_response('user.html',  {
+            'user':user,
+            'runs':runs,
+            },
+            context_instance=RequestContext(request))
+    else:
+        messages.add_message(request, messages.ERROR, 
+                "You are not allowed to see that.")
+        return HttpResponseRedirect("/")
+
 
 class RunException(Exception):
     pass
-
-def set_message(request, **obj):
-    """Simple message support"""
-    request.session('msg', base64.b64encode(json.dumps(obj)) if obj else None)
-
-def get_message(request):
-    """Get and clear the current message"""
-    message = request.session.get('msg', None)
-    if message:
-        set_message(request)  # clear the current cookie
-        return json.loads(base64.b64decode(message))
-
-
-
 
 @login_required
 def run( request ):
@@ -125,13 +131,13 @@ def run( request ):
             messages.add_message(request, messages.ERROR, e)
              #self.set_message(type=u'error', content=unicode(e))
         except KeyError:
-            messages.add_message(request, messages.ERROR, 
+            messages.add_message(request, messages.ERROR,
                     "Please specify location, distance & date.")
         except ValueError:
-            messages.add_message(request, messages.ERROR, 
+            messages.add_message(request, messages.ERROR,
                     "Please specify location, distance & date.")
         except Exception, e:
-            messages.add_message(request, messages.ERROR, 
+            messages.add_message(request, messages.ERROR,
                     "Unknown error occured. (%s)"%e)
 
     return HttpResponseRedirect("/")
