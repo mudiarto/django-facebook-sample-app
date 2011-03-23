@@ -22,6 +22,7 @@ function facebookInit(config) {
 
   FB.init({
     appId: Config.appId,
+    cookie: true,
     xfbml: true,
     channelUrl:
       window.location.protocol + '//' + window.location.host + Config.channelUrl 
@@ -30,15 +31,28 @@ function facebookInit(config) {
   FB.Canvas.setAutoResize();
 
   // ensure we're always running on apps.facebook.com
-  //if (window == top) { goHome(); }
+  // NOTE: this function check if we are in a frame
+  // which we want to disable since we want to support both regular & facebook app
+  // if (window == top) { goHome(); }
 }
 
+ function facebookConnect(form){
+      function handleResponse(response){
+          form.submit();
+      }
+      FB.login(handleResponse/*,{perms:'publish_stream,sms,offline_access,email,read_stream,status_update,etc'}*/);
+  }
+
 function handleSessionChange(response) {
-  // kusno's note: I think this function is used to check if the user is already registered
-  // in the server or not, if not, it will go to home, maybe somehow to force registration
+  // NOTE: kusno - this function is called when session changed
+  // Not sure why we need this function in the original run with friends
+  // maybe by going home, it will relogin with the new uid ?
   if ((Config.userIdOnServer && !response.session) ||
       Config.userIdOnServer != response.session.uid) {
-    //goHome();
+    // this happen if the session change, and user id is different from the one 
+    // in the application. Maybe somebody logged in with different credential
+    // before.
+    // goHome();
   }
 }
 

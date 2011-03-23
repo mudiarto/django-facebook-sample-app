@@ -1,3 +1,6 @@
 django==1.2.5
-django-social-auth==0.3.8
+django-socialregistration==0.4.3
 django-staticfiles==1.0rc1
+
+#git+http://github.com/nathanborror/django-registration.git
+hg+https://bitbucket.org/ubernostrum/django-registration

@@ -17,14 +17,12 @@
     </p>
   </div>
 
+  You are already logged in with email: {{ user.email }}, but you don't have facebook profile associate with this account
+
   <div id="login-flow">
-      <hr/>
-      <a href="{% url registration_register %}">Register with your email</a><br/>
-      or<br/>
-      <a href="{% url auth_login %}">Login with your email</a><br/>
-      <hr/>
-      or
+    Connect &amp; associate your facebook account with your login
     {% facebook_button %}
+
   </div>
 
 

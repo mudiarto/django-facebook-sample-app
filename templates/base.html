@@ -1,3 +1,5 @@
+{% load facebook_tags %}
+
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">
   <head>
@@ -21,15 +23,15 @@
         e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
         document.getElementById('fb-root').appendChild(e);
       }());
-     </script>
+    </script>
 
     <div id="doc">
       <div class="hd">
-        {% if logged_in_user and not in_facebook %}
+        {% if logged_in_user %}
           <div id="user-info">
             <div class="info">
-              <a class="name" href="/user/{{ logged_in_user.user_id }}">
-                {{ logged_in_user.name }}
+              <a class="name" href="/user/{{ logged_in_user.id }}">
+                {{ logged_in_user.username}}
               </a>
               {# <a class="logout" onclick="FB.logout()">Logout</a> #}
               <a class="logout" href="{% url logout %}">Logout</a>
@@ -40,12 +42,32 @@
         <a class="logo" href="/">Run with Friends</a>
       </div>
 
-      {% if message %}
-        <div class="message {{ message.type }}">{{ message.content|safe }}</div>
+
+      {#% block messages_block %#}
+      {% if messages %}
+      <div id="messages-wrap">
+          <ul id="messages">
+              {% for message in messages %}
+              <li id="message_{{ forloop.counter }}"{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                  {# NOTE: warning - could be dangerous --- #}
+                  {{ message|safe }}
+              </li>
+              {% endfor %}
+          </ul>
+      </div>
       {% endif %}
+      {#% endblock %#}
+
 
       <div class="bd">
-        {% block body %}{% endblock %}
+        {% block body %}
+        <div class="content_title">
+          {% block content_title %}{% endblock %}
+        </div>
+        <div class="content">
+          {% block content %}{% endblock %}
+        </div>
+        {% endblock %}
       </div><!-- .bd -->
 
       <div class="ft">
